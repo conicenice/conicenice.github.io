@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>张大厨的私房菜</title>
+  <!-- Tailwind CSS v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF7A00',
+            secondary: '#FFE0B2',
+            dark: '#333333',
+            light: '#F5F5F5',
+            success: '#4CAF50',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.3s ease-in-out',
+            'slide-up': 'slideUp 0.4s ease-out',
+            'pulse-slow': 'pulse 3s infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            },
+          },
+          boxShadow: {
+            'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .transition-transform-opacity {
+        transition-property: transform, opacity;
+      }
+      .scale-on-hover:hover {
+        transform: scale(1.03);
+      }
+    }
+  </style>
+</head>
+<body class="bg-light font-sans text-dark min-h-screen flex flex-col">
+  <!-- 顶部导航栏 -->
+  <header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+      <h1 class="text-2xl md:text-3xl font-bold text-primary text-center">张大厨的私房菜</h1>
+      <button id="toggle-selected-btn" class="fixed top-4 right-4 z-50 bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-opacity-90 transition-all">
+        <i class="fa fa-list" id="toggle-icon"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- 类别导航栏 -->
+  <nav class="bg-white shadow-sm sticky top-16 z-40">
+    <div class="container mx-auto px-4">
+      <div class="flex overflow-x-auto scrollbar-hide py-2">
+
+        <button id="nav-meat" class="category-btn active whitespace-nowrap px-4 py-2 mx-1 rounded-full bg-primary text-white font-medium transition-all">
+          <i class="fa fa-cutlery mr-1"></i> 猪肉
+        </button>
+        <button id="nav-beef" class="category-btn active whitespace-nowrap px-4 py-2 mx-1 rounded-full bg-primary text-white font-medium transition-all">
+          <i class="fa fa-cutlery mr-1"></i> 牛羊
+        </button>
+        <button id="nav-chicken" class="category-btn active whitespace-nowrap px-4 py-2 mx-1 rounded-full bg-primary text-white font-medium transition-all">
+          <i class="fa fa-cutlery mr-1"></i> 禽类
+        </button>
+        <button id="nav-seafood" class="category-btn active whitespace-nowrap px-4 py-2 mx-1 rounded-full bg-primary text-white font-medium transition-all">
+          <i class="fa fa-cutlery mr-1"></i> 海鲜
+        </button>
+        <button id="nav-vegetable" class="category-btn whitespace-nowrap px-4 py-2 mx-1 rounded-full bg-gray-200 hover:bg-primary hover:text-white font-medium transition-all">
+          <i class="fa fa-leaf mr-1"></i> 素菜
+        </button>
+        <button id="nav-cold" class="category-btn whitespace-nowrap px-4 py-2 mx-1 rounded-full bg-gray-200 hover:bg-primary hover:text-white font-medium transition-all">
+          <i class="fa fa-snowflake-o mr-1"></i> 凉菜
+        </button>
+        <button id="nav-staple" class="category-btn whitespace-nowrap px-4 py-2 mx-1 rounded-full bg-gray-200 hover:bg-primary hover:text-white font-medium transition-all">
+          <i class="fa fa-cutlery mr-1"></i> 主食
+        </button>
+        <button id="nav-snack" class="category-btn whitespace-nowrap px-4 py-2 mx-1 rounded-full bg-gray-200 hover:bg-primary hover:text-white font-medium transition-all">
+          <i class="fa fa-coffee mr-1"></i> 小吃
+        </button>
+        <button id="nav-dessert" class="category-btn whitespace-nowrap px-4 py-2 mx-1 rounded-full bg-gray-200 hover:bg-primary hover:text-white font-medium transition-all">
+          <i class="fa fa-birthday-cake mr-1"></i> 甜品
+        </button>
+        <button id="nav-soap" class="category-btn whitespace-nowrap px-4 py-2 mx-1 rounded-full bg-gray-200 hover:bg-primary hover:text-white font-medium transition-all">
+          <i class="fa fa-shower mr-1"></i> 汤品
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主要内容区 -->
+  <main class="flex-grow container mx-auto px-4 py-6">
+
+
+    <!-- 猪肉区域 -->
+    <section id="section-meat" class="mb-12 scroll-mt-24">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <i class="fa fa-cutlery mr-2 text-primary"></i>
+        猪肉
+      </h2>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- 菜品卡片将通过JavaScript动态生成 -->
+      </div>
+    </section>
+
+    <!-- 牛羊区域 -->
+    <section id="section-beef" class="mb-12 scroll-mt-24">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <i class="fa fa-cutlery mr-2 text-primary"></i>
+        牛羊
+      </h2>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- 菜品卡片将通过JavaScript动态生成 -->
+      </div>
+    </section>
+
+    <!-- 禽类区域 -->
+    <section id="section-chicken" class="mb-12 scroll-mt-24">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <i class="fa fa-cutlery mr-2 text-primary"></i>
+        禽类
+      </h2>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- 菜品卡片将通过JavaScript动态生成 -->
+      </div>
+    </section>
+
+    <!-- 海鲜区域 -->
+    <section id="section-seafood" class="mb-12 scroll-mt-24">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <i class="fa fa-cutlery mr-2 text-primary"></i>
+        海鲜
+      </h2>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- 菜品卡片将通过JavaScript动态生成 -->
+      </div>
+    </section>
+
+    <!-- 素菜区域 -->
+    <section id="section-vegetable" class="mb-12 scroll-mt-24">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <i class="fa fa-leaf mr-2 text-primary"></i>
+        素菜
+      </h2>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- 菜品卡片将通过JavaScript动态生成 -->
+      </div>
+    </section>
+
+    <!-- 凉菜区域 -->
+    <section id="section-cold" class="mb-12 scroll-mt-24">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <i class="fa fa-snowflake-o mr-2 text-primary"></i>
+        凉菜
+      </h2>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- 菜品卡片将通过JavaScript动态生成 -->
+      </div>
+    </section>
+
+    <!-- 主食区域 -->
+    <section id="section-staple" class="mb-12 scroll-mt-24">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <i class="fa fa-cutlery mr-2 text-primary"></i>
+        主食
+      </h2>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- 菜品卡片将通过JavaScript动态生成 -->
+      </div>
+    </section>
+
+    <!-- 小吃区域 -->
+    <section id="section-snack" class="mb-12 scroll-mt-24">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <i class="fa fa-coffee mr-2 text-primary"></i>
+        小吃
+      </h2>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- 菜品卡片将通过JavaScript动态生成 -->
+      </div>
+    </section>
+
+    <!-- 甜品区域 -->
+    <section id="section-dessert" class="mb-12 scroll-mt-24">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <i class="fa fa-birthday-cake mr-2 text-primary"></i>
+        甜品
+      </h2>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- 菜品卡片将通过JavaScript动态生成 -->
+      </div>
+    </section>
+
+    <!-- 汤品区域 -->
+    <section id="section-soap" class="mb-12 scroll-mt-24">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        <i class="fa fa-birthday-cake mr-2 text-primary"></i>
+        汤品
+      </h2>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- 菜品卡片将通过JavaScript动态生成 -->
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部已选菜品栏 -->
+  <footer id="selected-footer" class="bg-white shadow-lg fixed bottom-0 left-0 right-0 z-50 transform translate-y-full transition-transform duration-300 ease-in-out">
+    <div class="container mx-auto px-4 py-3">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-primary">已选菜品 (<span id="selected-count">0</span>)</h3>
+        <button id="toggle-footer" class="text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-chevron-up"></i>
+        </button>
+      </div>
+      <div id="selected-items" class="mt-2 max-h-40 overflow-y-auto scrollbar-hide">
+        <div class="text-gray-500 text-center py-2" id="empty-selected">暂无已选菜品</div>
+        <!-- 已选菜品将通过JavaScript动态生成 -->
+      </div>
+    </div>
+  </footer>
+
+  <!-- 菜品详情模态窗口 -->
+  <div id="dish-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black bg-opacity-50" id="modal-overlay"></div>
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md md:max-w-lg lg:max-w-2xl mx-4 z-10 animate-fade-in">
+      <div class="relative">
+        <button id="close-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md">
+          <i class="fa fa-times"></i>
+        </button>
+        <div id="modal-content" class="p-4 md:p-6">
+          <!-- 菜品详情将通过JavaScript动态生成 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图片放大模态窗口 -->
+  <div id="image-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black bg-opacity-80" id="image-modal-overlay"></div>
+    <div class="relative z-10 animate-fade-in">
+      <button id="close-image-modal" class="absolute -top-12 right-0 text-white hover:text-gray-300 z-10">
+        <i class="fa fa-times text-2xl"></i>
+      </button>
+      <!-- <img id="enlarged-image" src="" alt="放大图片" class="max-w-full max-h-[80vh] rounded-lg shadow-2xl"> -->
+      <img id="enlarged-image" src="" alt="放大图片" class="w-auto h-auto max-w-[70vw] max-h-[70vh] rounded-lg shadow-2xl">
+    </div>
+  </div>
+
+  <script>
+    // 菜品数据
+    const dishes = [
+      {
+        id: 11,
+        name: '辣椒炒肉',
+        description: '鲜嫩猪肉搭配螺丝椒和豆豉，鲜辣清香！',
+        category: 'meat',
+        image: 'menu/lajiaochaorou.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 12,
+        name: '红烧肉',
+        description: '中式硬菜，色泽红亮、肥而不腻！',
+        category: 'meat',
+        image: 'menu/hongshaorou.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 13,
+        name: '小酥肉',
+        description: '新鲜猪梅花肉，酥香松脆，咸香入味！',
+        category: 'meat',
+        image: 'menu/xiaosurou.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 14,
+        name: '糖醋里脊',
+        description: '经典传统名菜，色泽红亮、酸甜适口！',
+        category: 'meat',
+        image: 'menu/tangculiji.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 15,
+        name: '软炸里脊',
+        description: '色泽金黄，外酥里嫩！',
+        category: 'meat',
+        image: 'menu/ruanzhaliji.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 16,
+        name: '水煮肉片',
+        description: '肉质细嫩，色泽红亮，是下饭佐酒的不二之选！',
+        category: 'meat',
+        image: 'menu/shuizhuroupian.jpg',
+        rating: 4,
+        selected: false
+      },
+      {
+        id: 17,
+        name: '鱼香肉丝',
+        description: '鱼香味型，不见鱼却有鱼鲜，咸甜酸辣！',
+        category: 'meat',
+        image: 'menu/yuxiangrousi.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 18,
+        name: '京酱肉丝',
+        description: '京味名菜，酱香浓郁、老少皆宜！',
+        category: 'meat',
+        image: 'menu/jingjiangrousi.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 19,
+        name: '溜肉段',
+        description: '东北名菜，外酥里嫩，咸鲜适口！',
+        category: 'meat',
+        image: 'menu/liurouduan.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 20,
+        name: '红烧排骨',
+        description: '色泽红亮，肉质酥烂，酱香浓郁！',
+        category: 'meat',
+        image: 'menu/hongshaopaigu.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 21,
+        name: '糖醋排骨',
+        description: '酸甜入味，外焦里嫩，经典家常下饭菜！',
+        category: 'meat',
+        image: 'menu/tangcupaigu.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 22,
+        name: '豉汁排骨',
+        description: '豉香浓郁，排骨嫩滑脱骨！',
+        category: 'meat',
+        image: 'menu/chizhipaigu.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 23,
+        name: '回锅肉',
+        description: '经典川菜，咸鲜微辣，肥而不腻！',
+        category: 'meat',
+        image: 'menu/huiguorou.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 24,
+        name: '日式炸猪排',
+        description: '外酥里嫩，香而不腻，经典日式！',
+        category: 'meat',
+        image: 'menu/rishizhazhupai.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 25,
+        name: '熘肝尖',
+        description: '家常熘炒，肝片嫩爽酱香浓郁！',
+        category: 'meat',
+        image: 'menu/liuganjian.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 26,
+        name: '火爆肥肠',
+        description: '香辣过瘾，肥而不腻，外焦里嫩！',
+        category: 'meat',
+        image: 'menu/huobaofeichang.jpg',
+        rating: 4,
+        selected: false
+      },
+      {
+        id: 27,
+        name: '火爆腰花',
+        description: '经典川菜，脆嫩香辣，大火爆炒！',
+        category: 'meat',
+        image: 'menu/huobaoyaohua.jpg',
+        rating: 4,
+        selected: false
+      },
+      {
+        id: 28,
+        name: '香辣猪蹄',
+        description: '软糯入味，香辣过瘾，肥而不腻！',
+        category: 'meat',
+        image: 'menu/xianglazhuti.jpg',
+        rating: 4,
+        selected: false
+      },
+      {
+        id: 29,
+        name: '红烧猪蹄',
+        description: '软糯入味，肥而不腻，酱香浓郁超下饭！',
+        category: 'meat',
+        image: 'menu/hongshaozhuti.jpg',
+        rating: 4,
+        selected: false
+      },
+      {
+        id: 101,
+        name: '黑椒牛柳',
+        description: '中西风味，黑椒浓郁牛肉鲜嫩！',
+        category: 'beef',
+        image: 'menu/heijiaoniuliu.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 102,
+        name: '泡椒牛肉',
+        description: '川味泡椒入馔，酸辣嫩香超开胃！',
+        category: 'beef',
+        image: 'menu/paojiaoniurou.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 103,
+        name: '土豆烧牛肉',
+        description: '软糯土豆吸满肉香，牛肉酥烂入味！',
+        category: 'beef',
+        image: 'menu/tudoushaoniurou.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 104,
+        name: '番茄牛腩',
+        description: '酸甜浓郁，牛腩软烂，汤汁下饭！',
+        category: 'beef',
+        image: 'menu/fanqieniunan.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 105,
+        name: '咖喱牛肉',
+        description: '浓郁咖喱裹嫩肉，鲜香醇厚！',
+        category: 'beef',
+        image: 'menu/galiniurou.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 106,
+        name: '水煮牛肉',
+        description: '经典川菜，麻辣滚烫，牛肉滑嫩！',
+        category: 'beef',
+        image: 'menu/shuizhuniurou.jpg',
+        rating: 4,
+        selected: false
+      },
+      {
+        id: 107,
+        name: '酸汤肥牛',
+        description: '酸辣开胃，肥牛鲜嫩，汤汁浓郁下饭！',
+        category: 'beef',
+        image: 'menu/suantangfeiniu.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 108,
+        name: '小炒黄牛肉',
+        description: '鲜辣入味，肉质滑嫩，湘味小炒下饭一绝！',
+        category: 'beef',
+        image: 'menu/xiaochaohuangniurou.jpg',
+        rating: 4,
+        selected: false
+      },
+      {
+        id: 109,
+        name: '煎牛排',
+        description: '鲜嫩多汁，焦香浓郁，口感醇厚回味无穷！',
+        category: 'beef',
+        image: 'menu/jianniupai.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 201,
+        name: '葱爆羊肉',
+        description: '鲜香滑嫩，葱香浓郁，地道家常味！',
+        category: 'beef',
+        image: 'menu/congbaoyangrou.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 202,
+        name: '孜然羊肉',
+        description: '鲜香嫩滑，孜然浓郁，羊肉入味不膻！',
+        category: 'beef',
+        image: 'menu/ziranyangrou.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 203,
+        name: '法式羊排',
+        description: '外焦里嫩，奶香浓郁，法式经典羊排！',
+        category: 'beef',
+        image: 'menu/fashiyangpai.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 204,
+        name: '涮羊肉',
+        description: '鲜嫩羊肉薄切，涮煮入味，鲜香不膻！',
+        category: 'beef',
+        image: 'menu/shuanyangrou.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 301,
+        name: '宫保鸡丁',
+        description: '鲜香滑嫩，酸甜微辣，经典川味下饭佳肴！',
+        category: 'chicken',
+        image: 'menu/gongbaojiding.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 302,
+        name: '辣子鸡丁',
+        description: '鸡肉滑嫩香辣，色彩浓郁！',
+        category: 'chicken',
+        image: 'menu/lazijiding.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 303,
+        name: '香菇滑鸡',
+        description: '鲜香嫩滑，鸡肉入味，菇香浓郁超下饭！',
+        category: 'chicken',
+        image: 'menu/xiangguhuaji.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 304,
+        name: '黄焖鸡块',
+        description: '肉质鲜嫩，汤汁浓郁，酱香醇厚超下饭！',
+        category: 'chicken',
+        image: 'menu/huangmenjikuai.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 305,
+        name: '可乐鸡翅',
+        description: '甜咸适口，鸡翅裹着可乐浓汁！',
+        category: 'chicken',
+        image: 'menu/kelejichi.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 306,
+        name: '川渝辣子鸡',
+        description: '麻辣干香，外酥里嫩，越嚼越有味！',
+        category: 'chicken',
+        image: 'menu/chuanyulaziji.jpg',
+        rating: 4,
+        selected: false
+      },
+      {
+        id: 307,
+        name: '唐扬炸鸡',
+        description: '外酥里嫩，多汁鲜香，日式经典！',
+        category: 'chicken',
+        image: 'menu/tangyangzhaji.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 308,
+        name: '咖喱鸡',
+        description: '浓郁咖喱裹嫩鸡，鲜香入味！',
+        category: 'chicken',
+        image: 'menu/galiji.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 309,
+        name: '奥尔良鸡翅',
+        description: '外皮焦香，肉质鲜嫩，奥尔良风味浓郁入味！',
+        category: 'chicken',
+        image: 'menu/aoerliangjichi.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 401,
+        name: '清蒸鲈鱼',
+        description: '鲜嫩入味，原汁原味，清淡营养！',
+        category: 'seafood',
+        image: 'menu/qingzhengluyu.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 402,
+        name: '红烧鱼',
+        description: '肉质鲜嫩，酱香浓郁，咸鲜入味！',
+        category: 'seafood',
+        image: 'menu/hongshaoyu.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 403,
+        name: '炸小黄鱼',
+        description: '外酥里嫩，鲜香入味！',
+        category: 'seafood',
+        image: 'menu/zhaxiaohuangyu.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 404,
+        name: '酸菜鱼',
+        description: '鲜滑鱼片配酸菜，酸辣开胃，汤鲜入味！',
+        category: 'seafood',
+        image: 'menu/suancaiyu.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 405,
+        name: '水煮鱼',
+        description: '麻辣鲜香，鱼片滑嫩，热油激香！',
+        category: 'seafood',
+        image: 'menu/shuizhuyu.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 406,
+        name: '糖醋带鱼',
+        description: '外酥里嫩酸甜入味，家常经典！',
+        category: 'seafood',
+        image: 'menu/tangcudaiyu.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 407,
+        name: '蒜蓉蒸虾',
+        description: '鲜爽弹牙，蒜蓉香浓，粉丝吸汁超入味！',
+        category: 'seafood',
+        image: 'menu/suanrongzhengxia.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 408,
+        name: '油焖大虾',
+        description: '色泽红亮，虾肉鲜嫩，油润入味！',
+        category: 'seafood',
+        image: 'menu/youmendaxia.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 409,
+        name: '白灼基围虾',
+        description: '鲜嫩弹牙，原汁原味，鲜甜爽口！',
+        category: 'seafood',
+        image: 'menu/baizhuojiweixia.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 410,
+        name: '宫爆虾球',
+        description: '外酥里嫩，酸甜微辣，鲜香弹牙！',
+        category: 'seafood',
+        image: 'menu/gongbaoxiaqiu.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 411,
+        name: '麻辣小龙虾',
+        description: '麻香浓郁，辣而不燥，吮指回味超解馋！',
+        category: 'seafood',
+        image: 'menu/malaxiaolongxia.jpg',
+        rating: 4,
+        selected: false
+      },
+      {
+        id: 412,
+        name: '香辣花甲',
+        description: '鲜辣入味，肉质Q弹！',
+        category: 'seafood',
+        image: 'menu/xianglahuajia.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 413,
+        name: '蒜蓉扇贝',
+        description: '蒜蓉鲜香，粉丝入味，扇贝鲜嫩多汁！',
+        category: 'seafood',
+        image: 'menu/suanrongshanbei.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 414,
+        name: '爆炒鱿鱼须',
+        description: '脆嫩弹牙，香辣入味，鲜香过瘾！',
+        category: 'seafood',
+        image: 'menu/baochaoyouyuxu.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 501,
+        name: '蒜苔炒肉',
+        description: '蒜香浓郁，脆嫩入味，家常下饭小炒！',
+        category: 'vegetable',
+        image: 'menu/suantaichaorou.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 502,
+        name: '手撕包菜',
+        description: '爽脆鲜香，手撕入味，家常下饭！',
+        category: 'vegetable',
+        image: 'menu/shousibaocai.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 503,
+        name: '酱茄条',
+        description: '茄条裹酱酥软入味，咸香下饭！',
+        category: 'vegetable',
+        image: 'menu/jiangqietiao.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 504,
+        name: '地三鲜',
+        description: '鲜咸软糯，地道东北家常味！',
+        category: 'vegetable',
+        image: 'menu/disanxian.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 505,
+        name: '鱼香茄条',
+        description: '茄条软糯，鱼香浓郁，酸甜鲜辣！',
+        category: 'vegetable',
+        image: 'menu/yuxiangqietiao.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 506,
+        name: '炸茄盒',
+        description: '外酥里嫩，肉馅鲜香，经典家常！',
+        category: 'vegetable',
+        image: 'menu/zhaqiehe.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 507,
+        name: '韭菜鸡蛋',
+        description: '鲜香嫩滑，韭菜脆嫩鸡蛋松软！',
+        category: 'vegetable',
+        image: 'menu/jiucaijidan.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 508,
+        name: '韭菜香干',
+        description: '鲜香韭菜配嫩香干，家常小炒！',
+        category: 'vegetable',
+        image: 'menu/jiucaixianggan.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 601,
+        name: '红油耳丝',
+        description: '川味凉菜，脆嫩麻辣鲜香！',
+        category: 'cold',
+        image: 'menu/hongyouersi.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 602,
+        name: '蒜泥白肉',
+        description: '川味凉拌白肉，蒜泥红油香满口！',
+        category: 'cold',
+        image: 'menu/suannibairou.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 603,
+        name: '凉拌猪头肉',
+        description: '鲜香爽口，肥而不腻，经典下酒凉拌菜！',
+        category: 'cold',
+        image: 'menu/liangbanzhutourou.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 604,
+        name: '酱牛肉',
+        description: '酱香浓郁，肉质紧实，咸香入味！',
+        category: 'cold',
+        image: 'menu/jiangniurou.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 605,
+        name: '麻辣牛腱',
+        description: '麻辣鲜香，越嚼越香的下酒好菜！',
+        category: 'cold',
+        image: 'menu/malaniujian.jpg',
+        rating: 4,
+        selected: false
+      },
+      {
+        id: 606,
+        name: '泰式酸辣牛肉',
+        description: '酸辣鲜香，牛肉嫩滑，泰式风味开胃过瘾！',
+        category: 'cold',
+        image: 'menu/taishisuanlaniurou.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 607,
+        name: '捞汁肥羊',
+        description: '鲜嫩肥羊浸捞汁，酸辣开胃，一口过瘾！',
+        category: 'cold',
+        image: 'menu/laozhifeiyang.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 608,
+        name: '口水鸡',
+        description: '红油裹嫩鸡，麻香四溢，一口垂涎！',
+        category: 'cold',
+        image: 'menu/koushuiji.jpg',
+        rating: 4,
+        selected: false
+      },
+      {
+        id: 609,
+        name: '白斩鸡',
+        description: '皮白肉嫩原汁原味，清淡鲜香蘸料绝佳！',
+        category: 'cold',
+        image: 'menu/baizhanji.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 610,
+        name: '捞汁鲍鱼',
+        description: 'Q弹爽脆，开胃解腻！',
+        category: 'cold',
+        image: 'menu/laozhibaoyu.jpg',
+        rating: 2,
+        selected: false
+      },
+      {
+        id: 701,
+        name: '排骨焖面',
+        description: '排骨软烂豆角入味，面条吸汁鲜香浓郁！',
+        category: 'staple',
+        image: 'menu/paigumenmian.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 702,
+        name: '茄子打卤面',
+        description: '茄香浓郁卤汁绵滑，拌面入味超解馋！',
+        category: 'staple',
+        image: 'menu/qiezidalumian.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 703,
+        name: '炸酱面',
+        description: '酱香浓郁拌面香，咸鲜入味唇齿留！',
+        category: 'staple',
+        image: 'menu/zhajiangmian.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 704,
+        name: '韭菜饼',
+        description: '鲜香软嫩，家常美味！',
+        category: 'staple',
+        image: 'menu/jiucaibing.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 751,
+        name: '关东煮',
+        description: '鲜香入味，软嫩多汁，暖身解馋！',
+        category: 'snack',
+        image: 'menu/guandongzhu.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 752,
+        name: '酸辣粉',
+        description: '酸辣开胃，粉滑劲道，鲜香过瘾！',
+        category: 'snack',
+        image: 'menu/suanlafen.jpg',
+        rating: 3,
+        selected: false
+      },
+      {
+        id: 801,
+        name: '脆皮炸鲜奶',
+        description: '外酥里嫩，奶香浓郁，一口爆浆超满足！',
+        category: 'dessert',
+        image: 'menu/cuipizhaxiannai.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 802,
+        name: '雪绵豆沙',
+        description: '外皮蓬松如雪，内馅绵密香甜！',
+        category: 'dessert',
+        image: 'menu/xuemiandousha.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 901,
+        name: '滑肉汤',
+        description: '川渝家常滑肉汤，肉片软嫩汤清鲜！',
+        category: 'soap',
+        image: 'menu/huaroutang.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 902,
+        name: '排骨汤',
+        description: '汤色清亮，鲜醇滋补，暖心暖胃！',
+        category: 'soap',
+        image: 'menu/paigutang.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 903,
+        name: '牛肉萝卜汤',
+        description: '鲜香暖胃，软烂入味，滋补又暖心！',
+        category: 'soap',
+        image: 'menu/niurouluobotang.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 904,
+        name: '羊肉丸子汤',
+        description: '鲜香味美，暖身暖胃！',
+        category: 'soap',
+        image: 'menu/yangrouwanzitang.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 905,
+        name: '松茸鸡汤',
+        description: '清润滋补，鲜香回甘！',
+        category: 'soap',
+        image: 'menu/songrongjitang.jpg',
+        rating: 1,
+        selected: false
+      },
+      {
+        id: 906,
+        name: '鲫鱼豆腐汤',
+        description: '鲜醇鲫鱼配嫩豆腐，汤白味鲜暖心暖胃！',
+        category: 'soap',
+        image: 'menu/jiyudoufutang.jpg',
+        rating: 1,
+        selected: false
+      }
+    ];
+
+    // DOM元素
+    const categoryButtons = document.querySelectorAll('.category-btn');
+    const sections = document.querySelectorAll('section[id^="section-"]');
+    const selectedFooter = document.getElementById('selected-footer');
+    const toggleFooterBtn = document.getElementById('toggle-footer');
+    const selectedCount = document.getElementById('selected-count');
+    const selectedItems = document.getElementById('selected-items');
+    const emptySelected = document.getElementById('empty-selected');
+    const dishModal = document.getElementById('dish-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const closeModalBtn = document.getElementById('close-modal');
+    const modalContent = document.getElementById('modal-content');
+    const imageModal = document.getElementById('image-modal');
+    const imageModalOverlay = document.getElementById('image-modal-overlay');
+    const closeImageModalBtn = document.getElementById('close-image-modal');
+    const enlargedImage = document.getElementById('enlarged-image');
+
+    // 初始化页面
+    function initPage() {
+      renderDishes();
+      setupEventListeners();
+      
+      // 默认选中第一个分类（荤食）
+      const firstCategoryBtn = document.getElementById('nav-meat');
+      if (firstCategoryBtn) {
+        firstCategoryBtn.click();
+      }
+    }
+
+    // 渲染菜品
+    function renderDishes() {
+      // 清空所有区域
+      sections.forEach(section => {
+        const grid = section.querySelector('.grid');
+        if (grid) {
+          grid.innerHTML = '';
+        }
+      });
+
+      // 渲染菜品到各个区域
+      dishes.forEach(dish => {
+        // 渲染到对应分类
+        const categorySection = document.getElementById(`section-${dish.category}`);
+        if (categorySection) {
+          const grid = categorySection.querySelector('.grid');
+          if (grid) {
+            grid.appendChild(createDishCard(dish));
+          }
+        }
+
+
+      });
+    }
+
+    // 创建菜品卡片
+    function createDishCard(dish) {
+      const card = document.createElement('div');
+      card.className = 'bg-white rounded-lg shadow-card overflow-hidden transition-all duration-300 hover:shadow-card-hover scale-on-hover cursor-pointer';
+      card.dataset.dishId = dish.id;
+      
+      card.innerHTML = `
+        <div class="relative">
+          <img src="${dish.image}" alt="${dish.name}" class="w-full h-48 object-cover">
+          <div class="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md">
+            <span class="text-primary text-lg font-bold">
+              ${getRatingIcon(dish.rating)}
+            </span>
+          </div>
+        </div>
+        <div class="p-4">
+          <h3 class="text-lg font-bold mb-2">${dish.name}</h3>
+          <p class="text-gray-600 text-sm mb-4 line-clamp-2">${dish.description}</p>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-500">${getCategoryName(dish.category)}</span>
+            <button class="select-btn px-3 py-1 rounded-full text-sm font-medium transition-all ${dish.selected ? 'bg-success text-white' : 'bg-gray-200 text-gray-700 hover:bg-primary hover:text-white'}">
+              ${dish.selected ? '已选择' : '选择'}
+            </button>
+          </div>
+        </div>
+      `;
+
+      // 添加点击事件
+      card.addEventListener('click', (e) => {
+        // 如果点击的是选择按钮，不打开详情
+        if (e.target.closest('.select-btn')) {
+          toggleDishSelection(dish.id);
+          e.stopPropagation();
+        } else {
+          openDishModal(dish.id);
+        }
+      });
+
+      return card;
+    }
+
+    // 获取推荐等级图标
+    function getRatingIcon(rating) {
+      // 使用不同的图标表示不同的推荐等级
+      const icons = [
+        // '<i class="fa fa-star-o"></i>',
+        // '<i class="fa fa-star-half-o"></i>',
+        // '<i class="fa fa-star"></i>',
+        // '<i class="fa fa-heart"></i>',
+        // '<i class="fa fa-fire"></i>'
+        '🍭',
+        '🫑',
+        '🌶️',
+        '🔥',
+        '💀'
+      ];
+      
+      // 确保rating在有效范围内
+      const index = Math.min(Math.max(Math.floor(rating) - 1, 0), icons.length - 1);
+      return icons[index];
+    }
+
+    // 获取分类名称
+    function getCategoryName(category) {
+      const categoryNames = {
+        'meat': '猪肉',
+        'beef': '牛肉',
+        'chicken': '禽类',
+        'seafood': '海鲜',
+        'vegetable': '素菜',
+        'cold': '凉菜',
+        'staple': '主食',
+        'snack': '小吃',
+        'dessert': '甜品',
+        'soap': '汤品'
+      };
+      return categoryNames[category] || category;
+    }
+
+    // 设置事件监听器
+    function setupEventListeners() {
+      // 顶部显示/隐藏已选菜品按钮
+      const toggleSelectedBtn = document.getElementById('toggle-selected-btn');
+      if (toggleSelectedBtn) {
+        toggleSelectedBtn.addEventListener('click', toggleSelectedFooter);
+      }
+      
+      // 分类导航点击事件
+      categoryButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const category = button.id.replace('nav-', '');
+          scrollToSection(category);
+          
+          // 更新按钮样式
+          categoryButtons.forEach(btn => {
+            btn.classList.remove('active', 'bg-primary', 'text-white');
+            btn.classList.add('bg-gray-200');
+          });
+          button.classList.add('active', 'bg-primary', 'text-white');
+          button.classList.remove('bg-gray-200');
+        });
+      });
+
+      // 底部栏切换事件
+      toggleFooterBtn.addEventListener('click', toggleSelectedFooter);
+
+      // 模态窗口事件
+      modalOverlay.addEventListener('click', closeDishModal);
+      closeModalBtn.addEventListener('click', closeDishModal);
+      
+      // 图片模态窗口事件
+      imageModalOverlay.addEventListener('click', closeImageModal);
+      closeImageModalBtn.addEventListener('click', closeImageModal);
+
+      // 键盘事件
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeDishModal();
+          closeImageModal();
+        }
+      });
+    }
+
+    // 滚动到指定区域
+    function scrollToSection(category) {
+      const section = document.getElementById(`section-${category}`);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // 切换菜品选择状态
+    function toggleDishSelection(dishId) {
+      const dish = dishes.find(d => d.id === dishId);
+      if (dish) {
+        dish.selected = !dish.selected;
+        updateDishCards(dishId);
+        updateSelectedFooter();
+      }
+    }
+
+    // 更新菜品卡片状态
+    function updateDishCards(dishId) {
+      const dish = dishes.find(d => d.id === dishId);
+      if (!dish) return;
+
+      // 更新所有包含该菜品的卡片
+      const cards = document.querySelectorAll(`[data-dish-id="${dishId}"]`);
+      cards.forEach(card => {
+        const selectBtn = card.querySelector('.select-btn');
+        if (selectBtn) {
+          selectBtn.textContent = dish.selected ? '已选择' : '选择';
+          if (dish.selected) {
+            selectBtn.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-primary', 'hover:text-white');
+            selectBtn.classList.add('bg-success', 'text-white');
+          } else {
+            selectBtn.classList.remove('bg-success', 'text-white');
+            selectBtn.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-primary', 'hover:text-white');
+          }
+        }
+      });
+
+      // 如果模态窗口打开且显示的是当前菜品，也更新模态窗口
+      if (!dishModal.classList.contains('hidden')) {
+        const modalDishId = parseInt(modalContent.dataset.dishId);
+        if (modalDishId === dishId) {
+          const modalSelectBtn = modalContent.querySelector('.select-btn');
+          if (modalSelectBtn) {
+            modalSelectBtn.textContent = dish.selected ? '已选择' : '选择';
+            if (dish.selected) {
+              modalSelectBtn.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-primary', 'hover:text-white');
+              modalSelectBtn.classList.add('bg-success', 'text-white');
+            } else {
+              modalSelectBtn.classList.remove('bg-success', 'text-white');
+              modalSelectBtn.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-primary', 'hover:text-white');
+            }
+          }
+        }
+      }
+    }
+
+    // 更新已选菜品底部栏
+    function updateSelectedFooter() {
+      const selectedDishes = dishes.filter(dish => dish.selected);
+      selectedCount.textContent = selectedDishes.length;
+
+      // 更新已选菜品列表
+      selectedItems.innerHTML = '';
+      
+      if (selectedDishes.length === 0) {
+        emptySelected.classList.remove('hidden');
+        selectedItems.appendChild(emptySelected);
+      } else {
+        emptySelected.classList.add('hidden');
+        selectedDishes.forEach(dish => {
+          const item = document.createElement('div');
+          item.className = 'flex justify-between items-center py-2 border-b border-gray-100';
+          item.innerHTML = `
+            <div class="flex items-center">
+              <span class="font-medium">${dish.name}</span>
+              <span class="ml-2 text-xs text-gray-500">${getCategoryName(dish.category)}</span>
+            </div>
+            <button class="remove-btn text-xs text-gray-500 hover:text-red-500 transition-colors" data-dish-id="${dish.id}">
+              <i class="fa fa-times-circle"></i> 移除
+            </button>
+          `;
+          selectedItems.appendChild(item);
+
+          // 添加移除按钮事件
+          const removeBtn = item.querySelector('.remove-btn');
+          removeBtn.addEventListener('click', () => {
+            toggleDishSelection(dish.id);
+          });
+        });
+      }
+
+      // 显示底部栏（如果有选中的菜品）
+      if (selectedDishes.length > 0 && selectedFooter.classList.contains('translate-y-full')) {
+        selectedFooter.classList.remove('translate-y-full');
+      }
+    }
+
+    // 切换已选菜品底部栏显示/隐藏
+    function toggleSelectedFooter() {
+      const isHidden = selectedFooter.classList.contains('translate-y-full');
+      const toggleIcon = document.getElementById('toggle-icon');
+      
+      if (isHidden) {
+        selectedFooter.classList.remove('translate-y-full');
+        toggleFooterBtn.innerHTML = '<i class="fa fa-chevron-down"></i>';
+        if (toggleIcon) {
+          toggleIcon.className = 'fa fa-times';
+        }
+      } else {
+        selectedFooter.classList.add('translate-y-full');
+        toggleFooterBtn.innerHTML = '<i class="fa fa-chevron-up"></i>';
+        if (toggleIcon) {
+          toggleIcon.className = 'fa fa-list';
+        }
+      }
+    }
+
+    // 打开菜品详情模态窗口
+    function openDishModal(dishId) {
+      const dish = dishes.find(d => d.id === dishId);
+      if (!dish) return;
+
+      modalContent.dataset.dishId = dish.id;
+      modalContent.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="relative cursor-pointer" id="modal-image-container">
+            <img src="${dish.image}" alt="${dish.name}" class="w-full h-64 object-cover rounded-lg">
+            <div class="absolute bottom-2 right-2 bg-white bg-opacity-80 rounded-full p-1 shadow-sm">
+              <i class="fa fa-search-plus text-primary"></i>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-xl font-bold">${dish.name}</h3>
+              <span class="text-primary">${getRatingIcon(dish.rating)}</span>
+            </div>
+            <p class="text-sm text-gray-500 mb-2">${getCategoryName(dish.category)}</p>
+            <p class="text-gray-700 mb-4">${dish.description}</p>
+            <div class="flex justify-between items-center">
+              <button class="select-btn px-4 py-2 rounded-full text-sm font-medium transition-all ${dish.selected ? 'bg-success text-white' : 'bg-gray-200 text-gray-700 hover:bg-primary hover:text-white'}">
+                ${dish.selected ? '已选择' : '选择'}
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // 添加图片点击事件（放大查看）
+      const modalImageContainer = modalContent.querySelector('#modal-image-container');
+      modalImageContainer.addEventListener('click', () => {
+        openImageModal(dish.image);
+      });
+
+      // 添加选择按钮事件
+      const selectBtn = modalContent.querySelector('.select-btn');
+      selectBtn.addEventListener('click', () => {
+        toggleDishSelection(dish.id);
+      });
+
+      // 显示模态窗口
+      dishModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden'; // 防止背景滚动
+    }
+
+    // 关闭菜品详情模态窗口
+    function closeDishModal() {
+      dishModal.classList.add('hidden');
+      document.body.style.overflow = ''; // 恢复背景滚动
+    }
+
+    // 打开图片放大模态窗口
+    function openImageModal(imageSrc) {
+      enlargedImage.src = imageSrc;
+      imageModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden'; // 防止背景滚动
+    }
+
+    // 关闭图片放大模态窗口
+    function closeImageModal() {
+      imageModal.classList.add('hidden');
+      document.body.style.overflow = ''; // 恢复背景滚动
+    }
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', initPage);
+  </script>
+</body>
+</html>
